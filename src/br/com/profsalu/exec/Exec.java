@@ -1,6 +1,9 @@
 package br.com.profsalu.exec;
 
 import java.awt.EventQueue;
+import java.awt.Toolkit;
+
+import javax.swing.JFrame;
 
 import br.com.profsalu.view.CalculadoraGui;
 
@@ -11,6 +14,7 @@ public class Exec {
 			public void run() {
 				try {
 					CalculadoraGui window = new CalculadoraGui();
+					window.frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 					window.frame.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();

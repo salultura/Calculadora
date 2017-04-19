@@ -2,14 +2,9 @@ package br.com.profsalu.view;
 
 import java.awt.CardLayout;
 import java.awt.Font;
-import java.awt.FontFormatException;
 import java.awt.Toolkit;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
@@ -21,16 +16,14 @@ import javax.swing.LayoutStyle.ComponentPlacement;
 import javax.swing.SwingConstants;
 import javax.swing.border.BevelBorder;
 
-import br.com.profsalu.model.Calculadora;
+import br.com.profsalu.controller.Operacoes;
 import br.com.profsalu.model.ETipoOperacoes;
 
 public class CalculadoraGui {
 
 	public JFrame frame;
-	Double atual;
-	Double memoria;
 	ETipoOperacoes operAtual;
-	Calculadora calc = new Calculadora();
+	Operacoes operacao = new Operacoes();
 
 	public CalculadoraGui() {
 		initialize();
@@ -42,10 +35,11 @@ public class CalculadoraGui {
 	private void initialize() {
 
 		frame = new JFrame();
+		
+		frame.setTitle("Calculadora");
 		frame.setIconImage(
 				Toolkit.getDefaultToolkit().getImage(CalculadoraGui.class.getResource("/img/ic_calculadora.png")));
 		frame.setBounds(100, 100, 433, 510);
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
 		JPanel panelVisor = new JPanel();
 		panelVisor.setBorder(new BevelBorder(BevelBorder.LOWERED, null, null, null, null));
@@ -96,23 +90,23 @@ public class CalculadoraGui {
 
 				switch (operAtual) {
 				case SOMA:
-					calc.somar(lblVisor);
-					lblVisor.setText(calc.getResultado());
+					operacao.somar(lblVisor);
+					lblVisor.setText(operacao.exibirResultado());
 					break;
 
 				case SUBTRACAO:
-					calc.subtrair(lblVisor);
-					lblVisor.setText(calc.getResultado());
+					operacao.subtrair(lblVisor);
+					lblVisor.setText(operacao.exibirResultado());
 					break;
 
 				case MULTIPLICACAO:
-					calc.multiplicar(lblVisor);
-					lblVisor.setText(calc.getResultado());
+					operacao.multiplicar(lblVisor);
+					lblVisor.setText(operacao.exibirResultado());
 					break;
 
 				case DIVISAO:
-					calc.dividir(lblVisor);
-					lblVisor.setText(calc.getResultado());
+					operacao.dividir(lblVisor);
+					lblVisor.setText(operacao.exibirResultado());
 					break;
 
 				default:
@@ -130,7 +124,7 @@ public class CalculadoraGui {
 		button_somar.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mousePressed(MouseEvent e) {
-				calc.salvarNaMemoria(lblVisor);
+				operacao.salvarNaMemoria(lblVisor);
 				operAtual = ETipoOperacoes.SOMA;
 			}
 		});
@@ -141,7 +135,7 @@ public class CalculadoraGui {
 		button_subtrair.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mousePressed(MouseEvent e) {
-				calc.salvarNaMemoria(lblVisor);
+				operacao.salvarNaMemoria(lblVisor);
 				operAtual = ETipoOperacoes.SUBTRACAO;
 			}
 		});
@@ -152,7 +146,7 @@ public class CalculadoraGui {
 		button_dividir.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mousePressed(MouseEvent e) {
-				calc.salvarNaMemoria(lblVisor);
+				operacao.salvarNaMemoria(lblVisor);
 				operAtual = ETipoOperacoes.DIVISAO;
 			}
 		});
@@ -163,7 +157,7 @@ public class CalculadoraGui {
 		button_multiplicar.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mousePressed(MouseEvent e) {
-				calc.salvarNaMemoria(lblVisor);
+				operacao.salvarNaMemoria(lblVisor);
 				operAtual = ETipoOperacoes.MULTIPLICACAO;
 			}
 		});
@@ -197,7 +191,9 @@ public class CalculadoraGui {
 		button_0.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mousePressed(MouseEvent e) {
-				lblVisor.setText(lblVisor.getText().concat("0"));
+				if (!lblVisor.getText().equals("0")) {
+					lblVisor.setText(lblVisor.getText().concat("0"));
+				}
 			}
 		});
 		button_0.setFont(new Font("Tahoma", Font.PLAIN, 40));
@@ -316,59 +312,62 @@ public class CalculadoraGui {
 		button_clear.setFont(new Font("Tahoma", Font.PLAIN, 40));
 
 		GroupLayout gl_panelNumeros = new GroupLayout(panelNumeros);
-		gl_panelNumeros.setHorizontalGroup(gl_panelNumeros.createParallelGroup(Alignment.LEADING)
-				.addGroup(gl_panelNumeros.createSequentialGroup().addContainerGap().addGroup(gl_panelNumeros
-						.createParallelGroup(Alignment.LEADING)
+		gl_panelNumeros.setHorizontalGroup(
+			gl_panelNumeros.createParallelGroup(Alignment.LEADING)
+				.addGroup(gl_panelNumeros.createSequentialGroup()
+					.addContainerGap()
+					.addGroup(gl_panelNumeros.createParallelGroup(Alignment.LEADING)
 						.addGroup(gl_panelNumeros.createSequentialGroup()
-								.addComponent(button_7, GroupLayout.PREFERRED_SIZE, 75, GroupLayout.PREFERRED_SIZE)
-								.addGap(10)
-								.addComponent(button_8, GroupLayout.PREFERRED_SIZE, 75, GroupLayout.PREFERRED_SIZE)
-								.addPreferredGap(
-										ComponentPlacement.UNRELATED)
-								.addComponent(button_9, GroupLayout.PREFERRED_SIZE, 75, GroupLayout.PREFERRED_SIZE))
+							.addComponent(button_7, GroupLayout.PREFERRED_SIZE, 75, GroupLayout.PREFERRED_SIZE)
+							.addPreferredGap(ComponentPlacement.UNRELATED)
+							.addComponent(button_8, GroupLayout.PREFERRED_SIZE, 75, GroupLayout.PREFERRED_SIZE)
+							.addPreferredGap(ComponentPlacement.RELATED, 16, Short.MAX_VALUE)
+							.addComponent(button_9, GroupLayout.PREFERRED_SIZE, 75, GroupLayout.PREFERRED_SIZE))
 						.addGroup(gl_panelNumeros.createSequentialGroup()
-								.addComponent(button_4, GroupLayout.PREFERRED_SIZE, 75, GroupLayout.PREFERRED_SIZE)
-								.addPreferredGap(ComponentPlacement.UNRELATED)
-								.addComponent(button_5, GroupLayout.PREFERRED_SIZE, 75, GroupLayout.PREFERRED_SIZE)
-								.addPreferredGap(ComponentPlacement.UNRELATED)
-								.addComponent(button_6, GroupLayout.PREFERRED_SIZE, 75, GroupLayout.PREFERRED_SIZE))
+							.addComponent(button_4, GroupLayout.PREFERRED_SIZE, 75, GroupLayout.PREFERRED_SIZE)
+							.addPreferredGap(ComponentPlacement.UNRELATED)
+							.addComponent(button_5, GroupLayout.PREFERRED_SIZE, 75, GroupLayout.PREFERRED_SIZE)
+							.addPreferredGap(ComponentPlacement.UNRELATED)
+							.addComponent(button_6, GroupLayout.PREFERRED_SIZE, 75, GroupLayout.PREFERRED_SIZE))
 						.addGroup(gl_panelNumeros.createSequentialGroup()
-								.addComponent(button_1, GroupLayout.PREFERRED_SIZE, 75, GroupLayout.PREFERRED_SIZE)
-								.addPreferredGap(ComponentPlacement.UNRELATED)
-								.addComponent(button_2, GroupLayout.PREFERRED_SIZE, 75, GroupLayout.PREFERRED_SIZE)
-								.addPreferredGap(ComponentPlacement.UNRELATED)
-								.addComponent(button_3, GroupLayout.PREFERRED_SIZE, 75, GroupLayout.PREFERRED_SIZE))
+							.addComponent(button_1, GroupLayout.PREFERRED_SIZE, 75, GroupLayout.PREFERRED_SIZE)
+							.addPreferredGap(ComponentPlacement.UNRELATED)
+							.addComponent(button_2, GroupLayout.PREFERRED_SIZE, 75, GroupLayout.PREFERRED_SIZE)
+							.addPreferredGap(ComponentPlacement.UNRELATED)
+							.addComponent(button_3, GroupLayout.PREFERRED_SIZE, 75, GroupLayout.PREFERRED_SIZE))
 						.addGroup(gl_panelNumeros.createSequentialGroup()
-								.addComponent(button_clear, GroupLayout.PREFERRED_SIZE, 75, GroupLayout.PREFERRED_SIZE)
-								.addPreferredGap(ComponentPlacement.UNRELATED)
-								.addComponent(button_0, GroupLayout.PREFERRED_SIZE, 75, GroupLayout.PREFERRED_SIZE)
-								.addPreferredGap(ComponentPlacement.UNRELATED)
-								.addComponent(button_dot, GroupLayout.PREFERRED_SIZE, 75, GroupLayout.PREFERRED_SIZE)))
-						.addContainerGap(16, Short.MAX_VALUE)));
-
-		gl_panelNumeros.setVerticalGroup(gl_panelNumeros.createParallelGroup(Alignment.LEADING).addGroup(gl_panelNumeros
-				.createSequentialGroup().addGap(27)
-				.addGroup(gl_panelNumeros.createParallelGroup(Alignment.LEADING)
-						.addComponent(button_9, GroupLayout.PREFERRED_SIZE, 58, GroupLayout.PREFERRED_SIZE)
-						.addGroup(gl_panelNumeros.createParallelGroup(Alignment.BASELINE)
-								.addComponent(button_7, GroupLayout.PREFERRED_SIZE, 58, GroupLayout.PREFERRED_SIZE)
-								.addComponent(button_8, GroupLayout.PREFERRED_SIZE, 58, GroupLayout.PREFERRED_SIZE)))
-				.addPreferredGap(ComponentPlacement.RELATED)
-				.addGroup(gl_panelNumeros.createParallelGroup(Alignment.LEADING)
+							.addComponent(button_clear, GroupLayout.PREFERRED_SIZE, 75, GroupLayout.PREFERRED_SIZE)
+							.addPreferredGap(ComponentPlacement.UNRELATED)
+							.addComponent(button_0, GroupLayout.PREFERRED_SIZE, 75, GroupLayout.PREFERRED_SIZE)
+							.addPreferredGap(ComponentPlacement.UNRELATED)
+							.addComponent(button_dot, GroupLayout.PREFERRED_SIZE, 75, GroupLayout.PREFERRED_SIZE)))
+					.addContainerGap())
+		);
+		gl_panelNumeros.setVerticalGroup(
+			gl_panelNumeros.createParallelGroup(Alignment.LEADING)
+				.addGroup(gl_panelNumeros.createSequentialGroup()
+					.addGap(27)
+					.addGroup(gl_panelNumeros.createParallelGroup(Alignment.BASELINE)
+						.addComponent(button_7, GroupLayout.PREFERRED_SIZE, 58, GroupLayout.PREFERRED_SIZE)
+						.addComponent(button_8, GroupLayout.PREFERRED_SIZE, 58, GroupLayout.PREFERRED_SIZE)
+						.addComponent(button_9, GroupLayout.PREFERRED_SIZE, 58, GroupLayout.PREFERRED_SIZE))
+					.addPreferredGap(ComponentPlacement.RELATED)
+					.addGroup(gl_panelNumeros.createParallelGroup(Alignment.LEADING)
 						.addComponent(button_4, GroupLayout.PREFERRED_SIZE, 58, GroupLayout.PREFERRED_SIZE)
 						.addComponent(button_5, GroupLayout.PREFERRED_SIZE, 58, GroupLayout.PREFERRED_SIZE)
 						.addComponent(button_6, GroupLayout.PREFERRED_SIZE, 58, GroupLayout.PREFERRED_SIZE))
-				.addPreferredGap(ComponentPlacement.RELATED)
-				.addGroup(gl_panelNumeros.createParallelGroup(Alignment.LEADING)
+					.addPreferredGap(ComponentPlacement.RELATED)
+					.addGroup(gl_panelNumeros.createParallelGroup(Alignment.LEADING)
 						.addComponent(button_1, GroupLayout.PREFERRED_SIZE, 58, GroupLayout.PREFERRED_SIZE)
 						.addComponent(button_2, GroupLayout.PREFERRED_SIZE, 58, GroupLayout.PREFERRED_SIZE)
 						.addComponent(button_3, GroupLayout.PREFERRED_SIZE, 58, GroupLayout.PREFERRED_SIZE))
-				.addPreferredGap(ComponentPlacement.RELATED)
-				.addGroup(gl_panelNumeros.createParallelGroup(Alignment.LEADING)
+					.addPreferredGap(ComponentPlacement.RELATED)
+					.addGroup(gl_panelNumeros.createParallelGroup(Alignment.LEADING)
 						.addComponent(button_dot, GroupLayout.PREFERRED_SIZE, 58, GroupLayout.PREFERRED_SIZE)
 						.addComponent(button_0, GroupLayout.PREFERRED_SIZE, 58, GroupLayout.PREFERRED_SIZE)
 						.addComponent(button_clear, GroupLayout.PREFERRED_SIZE, 58, GroupLayout.PREFERRED_SIZE))
-				.addContainerGap(27, Short.MAX_VALUE)));
+					.addContainerGap(27, Short.MAX_VALUE))
+		);
 		panelNumeros.setLayout(gl_panelNumeros);
 		frame.getContentPane().setLayout(groupLayout);
 	}
